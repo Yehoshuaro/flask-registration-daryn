@@ -20,8 +20,11 @@ Session(app)
 
 
 # Google API settings
-SCOPE = ['YOUR_VALUE']
-SERVICE_ACCOUNT_FILE = ".JSON FILE"
+SCOPE = [
+    'https://www.googleapis.com/auth/drive',
+    'https://www.googleapis.com/auth/spreadsheets'
+]
+SERVICE_ACCOUNT_FILE = "service_account.json"
 credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPE)
 gc = gspread.authorize(credentials)
 drive_service = build('drive', 'v3', credentials=credentials)
@@ -32,7 +35,7 @@ def registration_form():
     return render_template('index.html', areas_with_schools=areas_with_schools)
 
 def read_excel_data():
-    workbook = load_workbook("Schools.xlsx path")
+    workbook = load_workbook("Schools.xlsx")
     sheet = workbook.active
     areas_with_schools = {}
 
@@ -167,7 +170,7 @@ def submit_registration():
         media = MediaIoBaseUpload(BytesIO(file_data), mimetype='application/pdf/xlsx', resumable=True)
         file_metadata = {
             'name': uploaded_file.filename,
-            'parents': ['YOUR GOOGLE DRIVE FOLDER ID']  # Replace with your Google Drive folder ID
+            'parents': ['1C5KLj4ex6yIB2k893NcgatN2RJFBsY0j']  # Replace with your Google Drive folder ID
         }
         file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
 
