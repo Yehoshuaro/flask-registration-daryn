@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация участника</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<form method="POST" action="/submit" enctype="multipart/form-data">
+    <label for="area">Аймақтың атауы / Название региона:</label>
+    <select name="area" id="area" required>
+            <option value="" disabled selected>Выберите опцию</option>
+        {% for area in areas_with_schools %}
+            <option value="{{ area }}">{{ area }}</option>
+        {% endfor %}
+    </select>
+     <br><br>
+    <label for="school">Мектебі / Школа:</label>
+    <select name="school" id="school" required>
+        <option value="" disabled selected>Выберите школу</option>
+    </select>
+    <br><br>
+    <label for="participant_iin">Қатысушының ЖСНі / ИИН участника:</label>
+    <input type="text" name="participant_iin" id="participant_iin" minlength="12" maxlength="12" required oninput="validateInput(event)">
+    <br><br>
+    <label for="participant_name">Қатысушының аты-жөні / Имя участника:</label>
+    <input type="text" name="participant_name" id="participant_name" required>
+    <br><br>
+    <label for="participant_gender">Қатысушының жынысы / Пол участника:</label>
+    <select name="participant_gender" id="participant_gender" required>
+        <option value="" disabled selected>Выберите опцию</option>
+        <option value="Ер">Ер</option>
+        <option value="Қыз">Қыз</option>
+    </select>
+    <br><br>
+    <label for="group/individual">Топтық(Группа) / Жеке(Индивидуальный):</label>
+    <select name="group/individual" id="group/individual" required>
+        <option value="" disabled selected>Выберите опцию</option>
+        <option value="Топтық">Топтық</option>
+        <option value="Жеке">Жеке</option>
+    </select>
+    <br><br>
+    <label for="participant_class">Сыныбы / Класс:</label>
+    <select name="participant_class" id="participant_class" required>
+        <option value="" disabled selected>Выберите опцию</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+    </select>
+    <br><br>
+    <label for="city/rural">Қалалық / Ауылдық:</label>
+    <select name="city/rural" id="city/rural" required>
+        <option value="" disabled selected>Выберите опцию</option>
+        <option value="Қалалық">Қалалық</option>
+        <option value="Ауылдық">Ауылдық</option>
+    </select>
+    <br><br>
+    <label for="language">Оқу тілі / Язык обучения:</label>
+    <select name="language" id="language" required>
+        <option value="" disabled selected>Выберите опцию</option>
+        <option value="Қазақша">Қазақша</option>
+        <option value="Орысша">Орысша</option>
+    </select>
+    <br><br>
+    <label for="section">Секциясы:</label>
+    <input type="text" name="section" id="section" required>
+    <br><br>
+    <label for="project_title">Тақырыбы:</label>
+    <input type="text" name="project_title" id="project_title" required>
+    <br><br>
+    <label for="1st_supervisor_name">1-ші жетекшінің аты-жөні / Имя 1-го научного руководителя:</label>
+    <input type="text" name="1st_supervisor_name" id="1st_supervisor_name" required>
+    <br><br>
+    <label for="1st_supervisor_iin">1-ші жетекшінің ЖСНі / ИИН 1-го научного руководителя:</label>
+    <input type="text" name="1st_supervisor_iin" id="1st_supervisor_iin" minlength="12" maxlength="12" required oninput="validateInput(event)">
+    <br><br>
+    <label for="2nd_supervisor_name">2-ші жетекшінің аты-жөні / Имя 2-го научного руководителя:</label>
+    <input type="text" name="2nd_supervisor_name" id="2nd_supervisor_name">
+    <br><br>
+    <label for="2nd_supervisor_iin">2-ші жетекшінің ЖСНі / ИИН 2-го научного руководителя:</label>
+    <input type="text" name="2nd_supervisor_iin" id="2nd_supervisor_iin" minlength="12" maxlength="12" oninput="validateInput(event)">
+    <br><br>
+    <label for="file">Жобаның файлы / Файл проекта:</label>
+    <input type="file" name="file" id="file" required>
+    <br><br>
+    <button type="submit"> Тіркелу / Зарегистрироваться</button>
+</form>
+
+<script>
+      document.getElementById('area').addEventListener('change', function() {
+          var selectedArea = this.value;
+          var schools = {{ areas_with_schools | tojson }};
+          var schoolSelect = document.getElementById('school');
+          schoolSelect.innerHTML = "<option value='' disabled selected>Выберите школу</option>";
+          schools[selectedArea].forEach(function(school) {
+              var option = document.createElement('option');
+              option.value = school;
+              option.textContent = school;
+              schoolSelect.appendChild(option);
+          });
+          schoolSelect.disabled = false;
+      });
+
+      function validateInput(event) {
+           const input = event.target;
+           const inputValue = input.value.trim(); // Remove leading and trailing spaces
+
+            // Check if the input consists of only numeric characters (0-9)
+            if (/^\d+$/.test(inputValue)) {
+                // Valid input
+                input.setCustomValidity('');
+            } else {
+                // Invalid input, set custom validation message
+                input.setCustomValidity('ИИН должен содержать только цифры (12 цифр)');
+            }
+      }
+</script>
+</body>
+</html>
