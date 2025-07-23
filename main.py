@@ -11,7 +11,9 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from openpyxl import load_workbook
-
+from datetime import datetime
+import os
+from openpyxl import Workbook, load_workbook
 
 app = Flask(__name__)
 
@@ -112,7 +114,7 @@ def read_excel_data():
 @app.route('/submit', methods=['POST'])
 def submit_registration():
     try:
-        # Get form data
+        # Get form data (same as before)
         field_data = {
             'Аймақтың атауы': request.form['area'],
             'Мектебі': request.form['school'],
@@ -131,57 +133,35 @@ def submit_registration():
             '2-ші жетекшінің ЖСНі': request.form['2nd_supervisor_iin']
         }
 
-        # Convert field_data values into a list in the desired order
-        participant_values = [
-            field_data['Аймақтың атауы'],
-            field_data['Мектебі'],
-            field_data['Қатысушының ЖСНі'],
-            field_data['Қатысушының аты-жөні'],
-            field_data['Қатысушының жынысы'],
-            field_data['Топтық / жеке'],
-            field_data['Сыныбы'],
-            field_data['Қалалық / Ауылдық'],
-            field_data['Оқу тілі'],
-            field_data['Секциясы'],
-            field_data['Тақырыбы'],
-            field_data['1-ші жетекшінің аты-жөні'],
-            field_data['1-ші жетекшінің ЖСНі'],
-            field_data['2-ші жетекшінің аты-жөні'],
-            field_data['2-ші жетекшінің ЖСНі']
-        ]
+        participant_values = list(field_data.values())
 
-
-        # Check required fields
-        required_fields = ['area', 'participant_name', 'participant_iin', 'participant_gender', 'group/individual',
-                           'participant_class', 'school', 'city/rural', 'language', 'section', 'project_title',
-                           '1st_supervisor_name', '1st_supervisor_iin', 'file']
-        for field in required_fields:
-            if not request.form.get(field, None) and field != 'file':
-                return "Ошибка: Все поля должны быть заполнены.", 400
-            if field == 'file' and 'file' not in request.files:
-                return "Ошибка: Файл проекта обязателен.", 400
-
-        # Upload file to Google Drive
+        # Save uploaded file to disk
         uploaded_file = request.files['file']
         if uploaded_file.filename == "":
             return "Ошибка: Файл не выбран.", 400
 
-        file_data = uploaded_file.read()
-        media = MediaIoBaseUpload(BytesIO(file_data), mimetype='application/pdf/xlsx', resumable=True)
-        file_metadata = {
-            'name': uploaded_file.filename,
-            'parents': ['1C5KLj4ex6yIB2k893NcgatN2RJFBsY0j']  # Replace with your Google Drive folder ID
-        }
-        file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+        # Save file locally
+        os.makedirs("uploads", exist_ok=True)
+        file_path = os.path.join("uploads", uploaded_file.filename)
+        uploaded_file.save(file_path)
 
-        # Save data to Google Sheets
-        sheet = gc.open('Registration_Data').sheet1
-        sheet.append_row(participant_values)
+        # Save data to Excel
+        excel_file = 'registrations.xlsx'
+        if not os.path.exists(excel_file):
+            # Create file if not exists
+            wb = Workbook()
+            ws = wb.active
+            ws.append(list(field_data.keys()))  # header
+        else:
+            wb = load_workbook(excel_file)
+            ws = wb.active
+
+        ws.append(participant_values)
+        wb.save(excel_file)
 
         return redirect(url_for('registration_form'))
 
     except Exception as e:
-        # Error handling and logging
         print(f"Произошла ошибка: {str(e)}")
         return "Внутренняя ошибка сервера", 500
 
