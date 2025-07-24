@@ -21,15 +21,6 @@ app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 
 
-# Google API settings
-SCOPE = [
-    'https://www.googleapis.com/auth/drive',
-    'https://www.googleapis.com/auth/spreadsheets'
-]
-SERVICE_ACCOUNT_FILE = "service_account.json"
-credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPE)
-gc = gspread.authorize(credentials)
-drive_service = build('drive', 'v3', credentials=credentials)
 
 @app.route('/', methods=['GET'])
 def registration_form():
@@ -125,8 +116,8 @@ def submit_registration():
             'Сыныбы': request.form['participant_class'],
             'Қалалық / Ауылдық': request.form['city/rural'],
             'Оқу тілі': request.form['language'],
-            'Секциясы': request.form['section'],
-            'Тақырыбы': request.form['project_title'],
+            'Секциясы / Секция': request.form['section'],
+            'Тақырыбы / Тема': request.form['project_title'],
             '1-ші жетекшінің аты-жөні': request.form['1st_supervisor_name'],
             '1-ші жетекшінің ЖСНі': request.form['1st_supervisor_iin'],
             '2-ші жетекшінің аты-жөні': request.form['2nd_supervisor_name'],

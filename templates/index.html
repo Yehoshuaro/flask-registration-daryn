@@ -11,7 +11,7 @@
 <form method="POST" action="/submit" enctype="multipart/form-data">
     <label for="area">Аймақтың атауы / Название региона:</label>
     <select name="area" id="area" required>
-            <option value="" disabled selected>Выберите опцию</option>
+            <option value="" disabled selected>Опцияны таңдаңыз / Выберите опцию</option>
         {% for area in areas_with_schools %}
             <option value="{{ area }}">{{ area }}</option>
         {% endfor %}
@@ -19,20 +19,20 @@
      <br><br>
     <label for="school">Мектебі / Школа:</label>
     <select name="school" id="school" required>
-        <option value="" disabled selected>Выберите школу</option>
+        <option value="" disabled selected>Мектепті таңдаңыз / Выберите школу</option>
     </select>
     <br><br>
     <label for="participant_iin">Қатысушының ЖСНі / ИИН участника:</label>
     <input type="text" name="participant_iin" id="participant_iin" minlength="12" maxlength="12" required oninput="validateInput(event)">
     <br><br>
-    <label for="participant_name">Қатысушының аты-жөні / Имя участника:</label>
+    <label for="participant_name">Қатысушының жеке куәлігі бойынша аты-жөні / Имя участника по удостоверению личности:</label>
     <input type="text" name="participant_name" id="participant_name" required>
     <br><br>
     <label for="participant_gender">Қатысушының жынысы / Пол участника:</label>
     <select name="participant_gender" id="participant_gender" required>
-        <option value="" disabled selected>Выберите опцию</option>
-        <option value="Ер">Ер</option>
-        <option value="Қыз">Қыз</option>
+        <option value="" disabled selected>Опцияны таңдаңыз / Выберите опцию</option>
+        <option value="Ер">Ер / Мужской</option>
+        <option value="Қыз">Қыз / Женский</option>
     </select>
     <br><br>
     <label for="group/individual">Топтық(Группа) / Жеке(Индивидуальный):</label>
@@ -44,7 +44,7 @@
     <br><br>
     <label for="participant_class">Сыныбы / Класс:</label>
     <select name="participant_class" id="participant_class" required>
-        <option value="" disabled selected>Выберите опцию</option>
+        <option value="" disabled selected>Опцияны таңдаңыз / Выберите опцию</option>
         <option value="2">2</option>
         <option value="3">3</option>
         <option value="4">4</option>
@@ -60,22 +60,22 @@
     <br><br>
     <label for="city/rural">Қалалық / Ауылдық:</label>
     <select name="city/rural" id="city/rural" required>
-        <option value="" disabled selected>Выберите опцию</option>
+        <option value="" disabled selected>Опцияны таңдаңыз / Выберите опцию</option>
         <option value="Қалалық">Қалалық</option>
         <option value="Ауылдық">Ауылдық</option>
     </select>
     <br><br>
     <label for="language">Оқу тілі / Язык обучения:</label>
     <select name="language" id="language" required>
-        <option value="" disabled selected>Выберите опцию</option>
+        <option value="" disabled selected>Опцияны таңдаңыз / Выберите опцию</option>
         <option value="Қазақша">Қазақша</option>
         <option value="Орысша">Орысша</option>
     </select>
     <br><br>
-    <label for="section">Секциясы:</label>
+    <label for="section">Секциясы / Секция:</label>
     <input type="text" name="section" id="section" required>
     <br><br>
-    <label for="project_title">Тақырыбы:</label>
+    <label for="project_title">Тақырыбы / Тема:</label>
     <input type="text" name="project_title" id="project_title" required>
     <br><br>
     <label for="1st_supervisor_name">1-ші жетекшінің аты-жөні / Имя 1-го научного руководителя:</label>
