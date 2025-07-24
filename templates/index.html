@@ -29,7 +29,7 @@
     <input type="date" name="birth_date" id="birth_date" required min="1940-01-01" max="2030-12-31">
     <br><br>
     <label for="participant_name">Қатысушының жеке куәлігі бойынша аты-жөні / Имя участника по удостоверению личности:</label>
-    <input type="text" name="participant_name" id="participant_name" required>
+    <input type="text" name="participant_name" id="participant_name" required oninput="validateNameInput(event)">
     <br><br>
     <label for="participant_gender">Қатысушының жынысы / Пол участника:</label>
     <select name="participant_gender" id="participant_gender" required>
@@ -82,13 +82,13 @@
     <input type="text" name="project_title" id="project_title" required>
     <br><br>
     <label for="1st_supervisor_name">1-ші жетекшінің аты-жөні / Имя 1-го научного руководителя:</label>
-    <input type="text" name="1st_supervisor_name" id="1st_supervisor_name" required>
+    <input type="text" name="1st_supervisor_name" id="1st_supervisor_name" required oninput="validateNameInput(event)">
     <br><br>
     <label for="1st_supervisor_iin">1-ші жетекшінің ЖСНі / ИИН 1-го научного руководителя:</label>
     <input type="text" name="1st_supervisor_iin" id="1st_supervisor_iin" minlength="12" maxlength="12" required oninput="validateSupervisorIIN(event)">
     <br><br>
     <label for="2nd_supervisor_name">2-ші жетекшінің аты-жөні / Имя 2-го научного руководителя:</label>
-    <input type="text" name="2nd_supervisor_name" id="2nd_supervisor_name">
+    <input type="text" name="2nd_supervisor_name" id="2nd_supervisor_name" oninput="validateNameInput(event)">
     <br><br>
     <label for="2nd_supervisor_iin">2-ші жетекшінің ЖСНі / ИИН 2-го научного руководителя:</label>
     <input type="text" name="2nd_supervisor_iin" id="2nd_supervisor_iin" minlength="12" maxlength="12" oninput="validateSupervisorIIN(event)">
@@ -154,6 +154,25 @@
                 return;
            }
            input.setCustomValidity('');
+      }
+
+      function validateNameInput(event) {
+          const input = event.target;
+          let value = input.value;
+          
+          const allowed = /^[A-Za-zА-Яа-яӘәҒғҚқҢңӨөҰұҮүHhІіЁёЫыІіЭэҮүҰұҚқҒғӘәӨөҺһ\s'-]+$/u;
+          if (!allowed.test(value)) {
+              input.setCustomValidity('ФИО должно содержать только буквы и пробелы, без цифр и символов');
+              return;
+          }
+          const words = value.split(' ').filter(Boolean);
+          for (let word of words) {
+              if (word[0] !== word[0].toUpperCase()) {
+                  input.setCustomValidity('Каждое слово ФИО должно начинаться с заглавной буквы');
+                  return;
+              }
+          }
+          input.setCustomValidity('');
       }
 </script>
 </body>

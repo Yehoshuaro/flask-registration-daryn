@@ -139,6 +139,18 @@ def submit_registration():
             if sup_iin and not re.fullmatch(r'\d{12}', sup_iin):
                 return f"Ошибка: ИИН {sup_key} должен содержать ровно 12 цифр", 400
 
+        # Validate names: only letters, each word capitalized, no digits or symbols
+        name_fields = ['participant_name', '1st_supervisor_name', '2nd_supervisor_name']
+        name_pattern = re.compile(r"^[A-Za-zА-Яа-яӘәҒғҚқҢңӨөҰұҮүHhІіЁёЫыІіЭэҮүҰұҚқҒғӘәӨөҺһ\s'-]+$")
+        for field in name_fields:
+            name = request.form.get(field, '')
+            if not name_pattern.fullmatch(name):
+                return f"Ошибка: '{field}' должно содержать только буквы и пробелы, без цифр и символов", 400
+            words = [w for w in name.split(' ') if w]
+            for word in words:
+                if word[0] != word[0].upper():
+                    return f"Ошибка: В поле '{field}' каждое слово должно начинаться с заглавной буквы", 400
+
         participant_values = list(field_data.values())
 
         uploaded_file = request.files['file']
