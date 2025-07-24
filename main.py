@@ -111,6 +111,7 @@ def submit_registration():
             'Мектебі': request.form['school'],
             'Қатысушының ЖСНі': request.form['participant_iin'],
             'Қатысушының аты-жөні': request.form['participant_name'],
+            'Туған күні': request.form['birth_date'],
             'Қатысушының жынысы': request.form['participant_gender'],
             'Топтық / жеке': request.form['group/individual'],
             'Сыныбы': request.form['participant_class'],
@@ -124,9 +125,22 @@ def submit_registration():
             '2-ші жетекшінің ЖСНі': request.form['2nd_supervisor_iin']
         }
 
+        # Validate participant IIN matches birth date
+        iin = request.form['participant_iin']
+        birth_date = request.form['birth_date'] 
+        if len(iin) >= 6 and birth_date:
+            year, month, day = birth_date.split('-')
+            expected_prefix = year[-2:] + month + day
+            if iin[:6] != expected_prefix:
+                return "Ошибка: Первые 6 цифр ИИН должны совпадать с датой рождения (ГГММДД)", 400
+        
+        for sup_key in ['1st_supervisor_iin', '2nd_supervisor_iin']:
+            sup_iin = request.form.get(sup_key, '')
+            if sup_iin and not re.fullmatch(r'\d{12}', sup_iin):
+                return f"Ошибка: ИИН {sup_key} должен содержать ровно 12 цифр", 400
+
         participant_values = list(field_data.values())
 
-        # Save uploaded file to disk
         uploaded_file = request.files['file']
         if uploaded_file.filename == "":
             return "Ошибка: Файл не выбран.", 400

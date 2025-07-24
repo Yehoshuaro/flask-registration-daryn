@@ -23,7 +23,10 @@
     </select>
     <br><br>
     <label for="participant_iin">Қатысушының ЖСНі / ИИН участника:</label>
-    <input type="text" name="participant_iin" id="participant_iin" minlength="12" maxlength="12" required oninput="validateInput(event)">
+    <input type="text" name="participant_iin" id="participant_iin" minlength="12" maxlength="12" required oninput="validateParticipantIIN(event)">
+    <br><br>
+    <label for="birth_date">Туған күні / Дата рождения:</label>
+    <input type="date" name="birth_date" id="birth_date" required min="1940-01-01" max="2030-12-31">
     <br><br>
     <label for="participant_name">Қатысушының жеке куәлігі бойынша аты-жөні / Имя участника по удостоверению личности:</label>
     <input type="text" name="participant_name" id="participant_name" required>
@@ -82,13 +85,13 @@
     <input type="text" name="1st_supervisor_name" id="1st_supervisor_name" required>
     <br><br>
     <label for="1st_supervisor_iin">1-ші жетекшінің ЖСНі / ИИН 1-го научного руководителя:</label>
-    <input type="text" name="1st_supervisor_iin" id="1st_supervisor_iin" minlength="12" maxlength="12" required oninput="validateInput(event)">
+    <input type="text" name="1st_supervisor_iin" id="1st_supervisor_iin" minlength="12" maxlength="12" required oninput="validateSupervisorIIN(event)">
     <br><br>
     <label for="2nd_supervisor_name">2-ші жетекшінің аты-жөні / Имя 2-го научного руководителя:</label>
     <input type="text" name="2nd_supervisor_name" id="2nd_supervisor_name">
     <br><br>
     <label for="2nd_supervisor_iin">2-ші жетекшінің ЖСНі / ИИН 2-го научного руководителя:</label>
-    <input type="text" name="2nd_supervisor_iin" id="2nd_supervisor_iin" minlength="12" maxlength="12" oninput="validateInput(event)">
+    <input type="text" name="2nd_supervisor_iin" id="2nd_supervisor_iin" minlength="12" maxlength="12" oninput="validateSupervisorIIN(event)">
     <br><br>
     <label for="file">Жобаның файлы / Файл проекта:</label>
     <input type="file" name="file" id="file" required>
@@ -111,18 +114,46 @@
           schoolSelect.disabled = false;
       });
 
-      function validateInput(event) {
+      function validateParticipantIIN(event) {
            const input = event.target;
-           const inputValue = input.value.trim(); // Remove leading and trailing spaces
-
-            // Check if the input consists of only numeric characters (0-9)
-            if (/^\d+$/.test(inputValue)) {
-                // Valid input
-                input.setCustomValidity('');
-            } else {
-                // Invalid input, set custom validation message
+           const inputValue = input.value.trim();
+           if (!/^\d{0,12}$/.test(inputValue)) {
                 input.setCustomValidity('ИИН должен содержать только цифры (12 цифр)');
-            }
+                return;
+           }
+           if (inputValue.length >= 6) {
+                const birthDate = document.getElementById('birth_date').value;
+                if (birthDate) {
+                    const [year, month, day] = birthDate.split('-');
+                    const iinPrefix = inputValue.substring(0, 6);
+                    const year2 = year.slice(-2);
+                    const expectedPrefix = year2 + month + day;
+                    if (iinPrefix !== expectedPrefix) {
+                        input.setCustomValidity('Первые 6 цифр ИИН должны совпадать с датой рождения (ГГММДД)');
+                        return;
+                    }
+                }
+           }
+           input.setCustomValidity('');
+      }
+      document.getElementById('birth_date').addEventListener('change', function() {
+          const iinInput = document.getElementById('participant_iin');
+          if (iinInput.value.length >= 6) {
+              validateParticipantIIN({target: iinInput});
+          }
+      });
+      function validateSupervisorIIN(event) {
+           const input = event.target;
+           const inputValue = input.value.trim();
+           if (!/^\d{0,12}$/.test(inputValue)) {
+                input.setCustomValidity('ИИН должен содержать только цифры (12 цифр)');
+                return;
+           }
+           if (inputValue.length !== 12) {
+                input.setCustomValidity('ИИН должен содержать ровно 12 цифр');
+                return;
+           }
+           input.setCustomValidity('');
       }
 </script>
 </body>
